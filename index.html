@@ -8,38 +8,60 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=17">
 </head>
 <body>
+  <!-- Outside: the room (js/scene.js) -->
+  <section id="intro" aria-label="A dark bedroom at 3 AM. Click to sit down at the computer.">
+    <div class="stage"></div>
+    <div class="intro-card">
+      <div class="intro-name">ALLAN SURAJ</div>
+      <div class="intro-time">03:00 AM · somewhere in Bengaluru</div>
+    </div>
+    <p class="intro-say" aria-live="polite"></p>
+    <div class="intro-print" role="group" aria-label="Print a résumé"></div>
+    <p class="intro-hint">Click things to explore · click the monitor to sit down</p>
+    <button class="skip btn small" type="button">Skip intro ▸</button>
+  </section>
+
   <!-- Boot screen -->
-  <section id="boot" aria-label="Boot sequence">
+  <section id="boot" class="hidden" aria-label="Boot sequence">
     <pre id="boot-log" aria-live="polite"></pre>
-    <button id="boot-btn" class="btn hidden" type="button">&gt; ENTER THE NIGHT SHIFT_</button>
+    <div id="boot-ui"></div>
     <p class="boot-hint">Press any key to skip</p>
   </section>
 
   <!-- Desktop -->
   <main id="desktop" class="hidden" aria-label="Night Shift OS desktop">
+    <canvas id="wp-canvas" aria-hidden="true"></canvas>
     <div id="wallpaper" aria-hidden="true">
       <div class="wp-title">NIGHT SHIFT OS</div>
       <div class="wp-motto"></div>
     </div>
     <nav id="icons" aria-label="Applications"></nav>
     <div id="windows"></div>
+    <div id="widgets"></div>
+    <div id="lurker" aria-hidden="true"><i></i><i></i></div>
     <div id="whisper" aria-hidden="true"></div>
   </main>
 
   <footer id="taskbar" class="hidden">
     <button id="start-btn" class="btn" type="button" aria-haspopup="true" aria-expanded="false">☾ START</button>
     <div id="tasks" aria-label="Open windows"></div>
+    <button id="voice-btn" class="btn small" type="button" title="Voice commands: click and speak" aria-pressed="false" aria-controls="voice-bar">🎙 VOICE</button>
+    <button id="sound-btn" class="btn small" type="button" title="Toggle ambient CRT hum and drone" aria-pressed="false">SND: OFF</button>
     <button id="motion-btn" class="btn small" type="button" title="Toggle CRT effects">CRT: ON</button>
     <time id="clock"></time>
   </footer>
+  <div id="voice-bar" role="status" aria-live="polite"><span class="vb-heard"></span><span class="vb-reply"></span></div>
   <div id="start-menu" class="hidden" role="menu"></div>
 
+  <div id="toasts" aria-live="polite"></div>
   <div id="crt" aria-hidden="true"></div>
 
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/data.js?v=17"></script>
+  <script src="js/app.js?v=17"></script>
+  <script src="js/scene.js?v=17"></script>
 </body>
 </html>

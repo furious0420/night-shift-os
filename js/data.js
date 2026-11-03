@@ -28,6 +28,14 @@ window.OS_DATA = {
     "It is 3:00 AM. Everyone else is asleep.",
   ],
 
+  // Sticky note on the desktop
+  todo: [
+    { text: "finish WinoFlow" },
+    { text: "sleep", done: true },
+    { text: "get hired at Wispr Flow" },
+    { text: "check what's outside the window" },
+  ],
+
   // CASE_FILE — the story. Leads = chances taken. Cold cases = mistakes reopened.
   caseFile: {
     title: "CASE #0001 — THE INTROVERT WHO STARTED SAYING YES",
@@ -88,7 +96,7 @@ window.OS_DATA = {
         body: [
           "One of my earliest tech memories is sitting at my dad's computer playing CS:GO. Around the same time I was also playing Contra. That was my introduction to gaming, and to FPS games in particular.",
           "I wasn't thinking about how games were made or what was going on behind the screen. I was just hooked. I'd spend hours exploring maps and getting lost in them.",
-          "Funny how a kid playing games on his dad's PC turned out to be my first real connection with technology.",
+          "Funny how a kid playing games on my dad's PC turned out to be my first real connection with technology.",
         ] },
       { label: "2016", loss: 2.8, lr: "3e-4", title: "Player → creator", sub: "From playing games to making them",
         body: [
@@ -184,16 +192,38 @@ window.OS_DATA = {
   agiWork: "Continual learning and interpretability, ideally as one problem. If models are going to keep learning on the job, I want to build the tools that show us what they actually learned.",
 
   // TRIVIA — about you + about AI. 'a' is the index of the correct option.
+  triviaIntro: "Five questions about me, three about horror and true crime. Every answer about me is hidden somewhere on this desktop.",
   trivia: [
-    { q: "What phrase does the subject live by?", opts: ["Stay comfy", "Seek discomfort", "Move fast", "Sleep is for the weak"], a: 1 },
-    { q: "Which genres are on the subject's training-run playlist?", opts: ["Lo-fi beats", "Metal & rock", "Jazz", "Silence"], a: 1 },
-    { q: "Which 2017 paper introduced the Transformer?", opts: ["Deep Residual Learning", "Attention Is All You Need", "ImageNet Classification", "Playing Atari with Deep RL"], a: 1 },
-    { q: "What does RLHF stand for?", opts: ["Recurrent Layer High Frequency", "Reinforcement Learning from Human Feedback", "Random Latent Hidden Features", "Robust Loss for Hard Facts"], a: 1 },
-    { q: "AlphaGo beat Lee Sedol in 2016 by what score?", opts: ["3–2", "5–0", "4–1", "4–0"], a: 2 },
-    { q: "Who coined the term 'artificial intelligence' (1956)?", opts: ["Alan Turing", "John McCarthy", "Marvin Minsky", "Geoffrey Hinton"], a: 1 },
-    { q: "What does the subject watch after a long training run?", opts: ["Rom-coms", "Spooky movies & true crime", "Cooking shows", "Nothing, they sleep"], a: 1 },
+    { q: "Which game was the subject playing on their dad's computer when it all started?", opts: ["Minecraft", "GTA: Vice City", "CS:GO", "Age of Empires"], a: 2 },
+    { q: "The subject used to give their random QBasic patterns names in which language?", opts: ["Latin", "Greek", "Klingon", "Elvish"], a: 0 },
+    { q: "What was the subject's first Roblox game, the one a co-developer took from them?", opts: ["An obby", "A tycoon", "A horror maze", "A pinball game"], a: 3 },
+    { q: "Where did the subject get lost after dark on a school trip?", opts: ["Disneyland Paris", "The Vatican Museums", "Legoland", "The Louvre"], a: 0 },
+    { q: "Which city does the subject call their second home?", opts: ["Singapore", "Dubai", "Muscat", "Bangkok"], a: 1 },
+    { q: "In The Shining (1980), what word does Danny keep repeating and write on the door?", opts: ["REDRUM", "HEREJOHNNY", "ALLWORK", "OVERLOOK"], a: 0 },
+    { q: "Which 1999 horror film was marketed as real footage left behind by missing students?", opts: ["The Ring", "Paranormal Activity", "The Sixth Sense", "The Blair Witch Project"], a: 3 },
+    { q: "The Zodiac Killer's 340-character cipher went unsolved for 51 years. When was it finally cracked?", opts: ["1999", "2011", "2020", "Still unsolved"], a: 2 },
   ],
   secret: "You found it.\n\nMost people close the tab. You played the quiz to the end — that's the same stubbornness I bring to work.\n\nIf you've read this far, we should probably talk.\n\n— " ,
+
+  // PRINT_RESUME — the two PDFs live in /assets
+  resumes: [
+    {
+      label: "Hardware", blurb: "RTL · FPGA · computer architecture", file: "assets/Allan_Suraj_Resume_Hardware.pdf",
+      lines: ["ALLAN SURAJ A", "B.Tech ECE · PES University · 2023-2027", "", "[ HARDWARE & SYSTEMS ]", "RTL design · Xilinx Zynq SoC · Vivado", "FPGA prototyping · Cadence Virtuoso", "SystemVerilog / Verilog · C · C++ · Python", "", "[ FEATURED ]", "WinoFlow: Winograd CNN accelerator", "Zynq-7020 · 150 MHz · bit-exact HLS model"],
+    },
+    {
+      label: "Software", blurb: "ML · computer vision · LLMs", file: "assets/Allan_Suraj_Resume_Software.pdf",
+      lines: ["ALLAN SURAJ A", "B.Tech ECE · PES University · 2023-2027", "", "[ AI / MACHINE LEARNING ]", "CNNs: YOLOv8 · ResNet50 · Grad-CAM", "Computer vision · object detection", "RAG pipelines · local LLMs (Ollama)", "Python · C · C++ · SQL · MATLAB", "", "[ FEATURED ]", "PRISM: offline AI assistant", "VinBigData chest X-ray detection"],
+    },
+  ],
+
+  // GUESTBOOK — paste your Supabase project URL + anon key to make lines shared between visitors.
+  guestbook: {
+    url: "",
+    key: "",
+    intro: "You made it this far, so leave a line. Recruiters, ghosts and fellow night-shifters welcome.",
+    seed: [{ name: "allan", msg: "First! Thanks for stopping by. Seek discomfort.", created_at: "2026-11-03T21:30:00Z" }],
+  },
 
   // AMP — playlist. Links open your favourite version; no audio is hosted here.
   playlist: [
@@ -245,15 +275,6 @@ window.OS_DATA = {
       body: ["Somewhere I've never been and can't pronounce yet."] },
   ],
 
-  // VOICE_LOGS — paste the real Wispr Flow dictations you used while building.
-  voiceLogs: [
-    { time: "The idea", text: "I want to build a portfolio for the Wispr Flow hiring challenge… my interests are gaming, music (metal and rock) and I love ML training models… I live by the phrase seek discomfort… I love trivia, I love quizzes… spooky movies, true crime fascinates me." },
-    { time: "CASE_FILE", text: "Let's start the case file first. The first point would be the risk of saying yes… Let me know if this much is enough for the case study, or if you want to cut it short, do it." },
-    { time: "TRAINING_RUN", text: "Let's start with 2013 as the first level, level one, and the heading for it to be: the beginning of my fascination with computers… It shouldn't be AI slop, which should be more humanized." },
-    { time: "AMP.exe", text: "Also if they hover over these songs it needs to start playing the actual song for like 5 to 8 seconds." },
-    { time: "PASSPORT", text: "Just add a note where Dubai is my second home and how it's very comforting, as people there are very friendly and the whole city is just so relaxed and chill." },
-  ],
-  voiceTake: "Every section on this desktop started as me talking, not typing. I could ramble through a whole memory in one go, the way I'd tell it to a friend, and shape it afterwards. That's why the stories sound like me.",
 
   // PROJECTS — shown if no GitHub username is set, or alongside live repos.
   // Top 3, ranked. points: short bullets shown in the folder.
@@ -276,13 +297,15 @@ window.OS_DATA = {
         "Telemetry-based risk scoring (0–100), case memory with similarity search, and a fine-tuned YOLOv8n surface-defect detector, reported honestly at mAP50 0.465.",
       ],
       stack: ["Python", "Flask", "RAG", "Ollama", "YOLOv8", "React"], url: "https://github.com/furious0420/prism_pseudo" },
-    { name: "SGUIE-Net: underwater image enhancement", tag: "Paper reimplementation",
-      summary: "Rebuilt an IEEE TIP 2022 paper from the text alone (no author code) and trained it end to end on a 4 GB laptop GPU.",
+    { name: "Chest X-ray abnormality detection", tag: "Medical computer vision",
+      summary: "Finding and boxing 14 kinds of chest abnormalities directly from the X-ray image, from an enlarged heart to collapsed lungs, without needing a prior clinical report.",
       points: [
-        "Reached 23.88 dB PSNR / 0.924 SSIM on the SUIM-E test set, against the paper's 24.82 / 0.928, up from 18.56 / 0.816 for the raw images.",
-        "Trained 100 epochs, then picked epoch 38 after catching overfitting: train loss halved while test PSNR dropped.",
+        "Faster R-CNN with a ResNet-50-FPN backbone, trained in PyTorch on the VinBigData chest X-ray dataset (converted to COCO format).",
+        "Full pipeline built from scratch: custom dataset loader, per-epoch checkpointing, COCO-style mAP evaluation and inference scripts.",
+        "Localises clear structural findings like aortic enlargement and cardiomegaly most reliably.",
+        "Designed to flag low-confidence cases for a human reviewer, with Grad-CAM heatmaps showing a radiologist what the model looked at.",
       ],
-      stack: ["PyTorch", "Computer vision", "Attention"], url: "https://github.com/furious0420/underwater-image-enhancement" },
+      stack: ["PyTorch", "Faster R-CNN", "ResNet-50", "COCO eval"], url: "https://github.com/furious0420/VinBigData-CXR-Detection" },
   ],
 
   // LOADOUT — tech stack as an inventory. tier: legendary (daily driver), rare (comfortable), common (learning)
