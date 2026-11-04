@@ -125,6 +125,7 @@
       };
       document.addEventListener("keydown", key);
       $(".boot-menu", ui).onclick = (e) => { const b = e.target.closest(".bm"); if (b) { sel = +b.dataset.k; paint(); go(); } };
+      $(".boot-menu", ui).onpointerover = (e) => { const b = e.target.closest(".bm"); if (b && +b.dataset.k !== sel) { sel = +b.dataset.k; paint(); b.focus(); } };
     }
 
     function enter(m) {
@@ -140,7 +141,6 @@
       award("clocked");
       if (m === "haunted") award("haunted");
       openApp("readme");
-      if (store.get("seenHire") !== "1") { store.set("seenHire", "1"); setTimeout(() => openApp("hire"), reduceMotion ? 0 : 900); }
     }
   }
 
@@ -841,6 +841,7 @@
       <p>Hey ${esc(visitor)}. You've booted my machine at 3 AM. Everything about me is on this desktop — the risks I've taken, the mistakes I've reopened, the models I've trained and the music that was playing while I did it.</p>
       <p class="muted">Motto: <span style="color:var(--blood)">${esc(o.motto)}</span> · ${esc(o.location)}</p>
       <h3>Where to start</h3>
+      <p><button class="btn tour-btn" data-tour type="button">▶ 60-SECOND GUIDED TOUR</button></p>
       <p>
         <button class="btn small" data-go="casefile" type="button">Investigate the case</button>
         <button class="btn small" data-go="training" type="button">Watch my training run</button>
@@ -851,7 +852,74 @@
     goLinks(body);
   }
   function goLinks(body) {
-    body.addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); openApp(g.dataset.go); } });
+    body.addEventListener("click", (e) => {
+      if (e.target.closest("[data-tour]")) return tour();
+      const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); openApp(g.dataset.go); }
+    });
+  }
+
+  // ---------- Guided tour: a 60-second autopilot through the highlights ----------
+  let touring = null;
+  function tour() {
+    if (touring) return;
+    const run = { stop: false };
+    touring = run;
+    const bar = document.createElement("div");
+    bar.id = "tour-bar"; bar.setAttribute("role", "status"); bar.setAttribute("aria-live", "polite");
+    bar.innerHTML = `<span class="tb-step"></span><span class="tb-text"></span><span class="tb-ctrl"><button class="btn small" data-t="next" type="button">NEXT ▸</button><button class="btn small danger" data-t="end" type="button">END TOUR</button></span>`;
+    document.body.appendChild(bar);
+    let skip = null;
+    const wait = (ms) => new Promise((res, rej) => {
+      const id = setTimeout(done, ms);
+      function done() { clearTimeout(id); skip = null; run.stop ? rej(new Error("stopped")) : res(); }
+      skip = done;
+    });
+    bar.onclick = (e) => {
+      const b = e.target.closest("[data-t]"); if (!b) return;
+      if (b.dataset.t === "end") run.stop = true;
+      if (skip) skip();
+    };
+    const el = (id) => wins.get(id) && wins.get(id).el;
+    const closeAll = () => [...wins.keys()].forEach(closeWin);
+    const steps = [
+      ["Welcome to Night Shift OS. Sit back, this takes about a minute.", 3500, () => closeAll()],
+      ["CASE_FILE: my story as a detective board. Leads are risks I took, cold cases are mistakes I reopened.", 6000, () => openApp("casefile")],
+      ["TRAINING_RUN: my life as a loss curve, from 2013 to now.", 5500, () => { closeAll(); openApp("training"); }],
+      ["WHY_HIRE_ME: four Wispr Flow bugs from public reviews, and how I'd patch them.", 7000, () => {
+        closeAll(); openApp("hire");
+        const t = el("hire") && $(".ticket", el("hire"));
+        if (t) { t.open = true; setTimeout(() => { const a = $(".apply", t); if (a) a.click(); }, 900); }
+      }],
+      ["UPGRADE_SHOP: how I'd spend the $3,000 grant, loot-drop style. Your turn to shop after the tour.", 7000, () => {
+        closeAll(); openApp("shop");
+        const w = el("shop"); if (!w) return;
+        const cards = [...w.querySelectorAll(".item")];
+        cards.forEach((c, i) => setTimeout(() => {
+          cards.forEach((x) => x.classList.remove("peek"));
+          c.classList.add("peek"); c.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 600 + i * 1100));
+        setTimeout(() => { cards.forEach((x) => x.classList.remove("peek")); $(".win-body", w).scrollTo({ top: 0, behavior: "smooth" }); }, 600 + cards.length * 1100);
+      }],
+      ["AMP: the playlist. Hover a track for a 7-second preview.", 4500, () => { closeAll(); openApp("amp"); }],
+      [mode === "safe" ? "In SAFE MODE the scares are off. Reboot in HAUNTED mode if you're brave." : "…and the machine is haunted. Don't open what you're told not to open.", 4000, () => {
+        closeAll();
+        if (mode !== "safe" && !reduceMotion) { document.body.classList.add("glitch"); setTimeout(() => document.body.classList.remove("glitch"), 420); }
+      }],
+      [`That's the tour. ${Object.keys(TROPHIES).length} trophies are hidden around here. Try 🎙 VOICE, or say "why should we hire you".`, 5000, () => openApp("readme")],
+    ];
+    (async () => {
+      try {
+        for (let i = 0; i < steps.length; i++) {
+          const [text, ms, act] = steps[i];
+          $(".tb-step", bar).textContent = `TOUR ${i + 1}/${steps.length}`;
+          $(".tb-text", bar).textContent = text;
+          if (i === steps.length - 1) $("[data-t=next]", bar).textContent = "DONE";
+          act();
+          await wait(ms);
+        }
+      } catch { /* ended early */ }
+      bar.remove(); touring = null;
+    })();
   }
 
   // ---------- CASE_FILE ----------

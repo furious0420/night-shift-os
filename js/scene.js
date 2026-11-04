@@ -431,7 +431,7 @@
   const sitDown = () => {
     if (zoom) return;
     if (reduceMotion) return finish();
-    focus = null; glow(hovered, false);
+    focus = null; glow(hovered, false); closeChooser();
     intro.classList.add("zooming");
     zoom = { t0: performance.now(), from: camera.position.clone(), fromLook: camLook.clone() };
   };
