@@ -26,6 +26,13 @@
     trophy: '<path d="M12 6h16v8a8 8 0 0 1-16 0zM12 9H6v2a6 6 0 0 0 6 6M28 9h6v2a6 6 0 0 1-6 6M20 22v6M15 28h10v6H15z"/>',
     guestbook: '<path d="M8 5h22a2 2 0 0 1 2 2v28H10a2 2 0 0 1-2-2z"/><path d="M8 31a2 2 0 0 1 2-2h22M14 12h12M14 17h8"/><path d="M27 20l-6 6-1 3 3-1 6-6z"/>',
     printer: '<path d="M12 16V5h16v11"/><rect x="5" y="16" width="30" height="13" rx="2"/><path d="M12 25h16v11H12zM16 29h8M16 32h6"/><circle cx="30" cy="21" r="1"/>',
+    bug: '<ellipse cx="20" cy="23" rx="8" ry="10"/><path d="M14 13a6 6 0 0 1 12 0M20 13v20M12 19H5M12 26H5M28 19h7M28 26h7M13 31l-5 4M27 31l5 4M15 9l-3-4M25 9l3-4"/>',
+    coin: '<circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="10"/><path d="M23 15h-4.5a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 1 0 5H17M20 12v3M20 25v3"/>',
+    laptop: '<rect x="8" y="8" width="24" height="17" rx="1"/><path d="M4 30h32l-2 3H6z"/>',
+    tower: '<rect x="11" y="4" width="18" height="32" rx="1"/><circle cx="20" cy="24" r="5"/><path d="M15 10h10M15 14h10"/>',
+    plane: '<path d="M4 22l32-12-10 24-6-9z"/><path d="M20 25l16-15"/>',
+    ticket: '<path d="M5 12h30v5a3 3 0 0 0 0 6v5H5v-5a3 3 0 0 0 0-6z"/><path d="M24 12v16" stroke-dasharray="2 2"/><path d="M11 19l3 2-1 4 3-2 3 2-1-4 3-2h-4l-1-3-1 3z"/>',
+    mic: '<rect x="15" y="4" width="10" height="18" rx="5"/><path d="M10 19a10 10 0 0 0 20 0M20 29v6M14 35h12"/>',
     eye: '<path d="M3 20c5-8 11-12 17-12s12 4 17 12c-5 8-11 12-17 12S8 28 3 20z"/><circle cx="20" cy="20" r="6"/><circle cx="20" cy="20" r="2"/>',
   };
   const svg = (k) => `<svg viewBox="0 0 40 40" aria-hidden="true">${ICON[k]}</svg>`;
@@ -33,6 +40,8 @@
   // ---------- Apps ----------
   const APPS = {
     readme:   { label: "README.txt",      icon: "readme",   w: 520, h: 460, render: renderReadme },
+    hire:     { label: "WHY_HIRE_ME.exe", icon: "bug",      w: 720, h: 680, color: "red", render: renderHire },
+    shop:     { label: "UPGRADE_SHOP.exe",icon: "coin",     w: 760, h: 700, color: "amber", render: renderShop },
     casefile: { label: "CASE_FILE.exe",   icon: "casefile", w: 860, h: 720, color: "red", render: renderCaseFile },
     training: { label: "TRAINING_RUN.log",icon: "training", w: 720, h: 680, render: renderTraining },
     agi:      { label: "AGI_ROADMAP.md",  icon: "agi",      w: 700, h: 700, render: renderAgi },
@@ -131,6 +140,7 @@
       award("clocked");
       if (m === "haunted") award("haunted");
       openApp("readme");
+      if (store.get("seenHire") !== "1") { store.set("seenHire", "1"); setTimeout(() => openApp("hire"), reduceMotion ? 0 : 900); }
     }
   }
 
@@ -538,7 +548,7 @@
     if (!SR) { btn.remove(); return; }
     const bar = $("#voice-bar"), heard = $(".vb-heard", bar), reply = $(".vb-reply", bar);
     const ALIAS = [
-      [/\b(resume|résumé|cv|print)\b/, "printer"], [/\b(guest ?book|sign)\b/, "guestbook"], [/\b(trophies|trophy|achievements?)\b/, "trophies"],
+      [/\b(resume|résumé|cv|print)\b/, "printer"], [/\b(grant|shop|upgrade|money|3,?000|spend)\b/, "shop"], [/\b(guest ?book|sign)\b/, "guestbook"], [/\b(trophies|trophy|achievements?)\b/, "trophies"],
       [/\b(case ?file|story|evidence|case)\b/, "casefile"], [/\b(training|journey|timeline|run)\b/, "training"], [/\b(a ?g ?i|roadmap|super ?intelligence|future)\b/, "agi"],
       [/\b(trivia|quiz)\b/, "trivia"], [/\b(music|songs?|amp|playlist|metal)\b/, "amp"], [/\b(passport|travel|trips?|countries)\b/, "passport"],
       [/\b(projects?|work|github)\b/, "projects"], [/\b(skills|stack|loadout|tools)\b/, "loadout"], [/\b(terminal|shell|console)\b/, "terminal"],
@@ -550,7 +560,7 @@
       if (/\bclose (all|everything)\b/.test(s)) { [...wins.keys()].forEach(closeWin); return "Closed everything."; }
       if (/\bclose\b/.test(s)) { if (focused) closeWin(focused); return "Closed."; }
       if (/\b(sound|ambien)\w* (on|off)\b/.test(s)) { const on = /\bon\b/.test(s); if (ambient.on !== on) $("#sound-btn").click(); return `Sound ${on ? "on" : "off"}.`; }
-      if (/\bhire\b/.test(s)) { award("hired"); return `Permission granted. ${D.owner.name} is ready when you are.`; }
+      if (/\b(hire|why should|wispr|india)\b/.test(s)) { award("hired"); openApp("hire"); return `Opening WHY_HIRE_ME.exe. ${D.owner.name} is ready when you are.`; }
       const hit = ALIAS.find(([re]) => re.test(s));
       if (!hit) return `Didn't catch a command in "${said}". Try "open projects".`;
       const id = hit[1];
@@ -590,6 +600,125 @@
     };
   }
 
+  // ---------- WHY_HIRE_ME.exe: Wispr Flow bug tracker + India launch plan ----------
+  function renderHire(body, entry) {
+    const H = D.hire, done = new Set();
+    const total = H.issues.length;
+    body.innerHTML = `<h2>WHY_HIRE_ME.exe</h2>
+      <p class="muted hire-note">WISPR_FLOW // OPEN ISSUES · triaged by ${esc(D.owner.handle)}@nightshift · ${esc(H.note)}</p>
+      <div class="hire-tabs" role="tablist"><button class="btn small on" role="tab" aria-selected="true" data-tab="bugs">BUG_TRACKER</button><button class="btn small" role="tab" aria-selected="false" data-tab="india">LAUNCH: INDIA</button></div>
+      <div class="hire-pane" data-pane="bugs">
+        ${H.issues.map((t, i) => `<details class="ticket" data-i="${i}">
+          <summary><span class="tid">${esc(t.id)}</span><span class="sev sev-${esc(t.sev.toLowerCase())}">${esc(t.sev)}</span><b>"${esc(t.title)}"</b><span class="st">OPEN</span></summary>
+          <dl><dt>SYMPTOM</dt><dd>${esc(t.symptom)}</dd><dt>ROOT CAUSE</dt><dd>${esc(t.cause)}</dd>
+          <dt>PATCH</dt><dd><ul>${t.patch.map((p) => `<li>${esc(p)}</li>`).join("")}</ul></dd></dl>
+          <button class="btn small apply" type="button">[ APPLY PATCH ]</button><pre class="plog" aria-live="polite"></pre>
+        </details>`).join("")}
+        <p class="hire-foot"><span class="count">${total} issues open · 0 patched</span> · patch author available for hire</p>
+      </div>
+      <div class="hire-pane hidden" data-pane="india">
+        <h3 class="launch-h">What I'd launch for Wispr Flow India</h3>
+        <p>${esc(H.indiaIntro)}</p>
+        <ol class="launch">${H.india.map((l) => `<li><span class="tid">${esc(l.id)}</span><b>${esc(l.title)}</b><p>${esc(l.body)}</p></li>`).join("")}</ol>
+      </div>`;
+    const foot = $(".hire-foot", body);
+    const paint = () => {
+      if (done.size < total) { $(".count", foot).textContent = `${total - done.size} issues open · ${done.size} patched`; return; }
+      foot.innerHTML = `<b>${total}/${total} patched. Ship the author.</b> <a class="btn small" href="mailto:${esc(D.owner.email)}?subject=${encodeURIComponent("Night Shift OS: let's talk")}">EMAIL ME</a> <a class="btn small" href="${esc(D.owner.linkedin)}" target="_blank" rel="noopener">LINKEDIN</a>`;
+      award("patched");
+    };
+    body.addEventListener("click", (e) => {
+      const tab = e.target.closest("[data-tab]");
+      if (tab) {
+        body.querySelectorAll("[data-tab]").forEach((b) => { b.classList.toggle("on", b === tab); b.setAttribute("aria-selected", b === tab); });
+        body.querySelectorAll("[data-pane]").forEach((p) => p.classList.toggle("hidden", p.dataset.pane !== tab.dataset.tab));
+        return;
+      }
+      const btn = e.target.closest(".apply"); if (!btn) return;
+      const card = btn.closest(".ticket"), i = +card.dataset.i, t = H.issues[i], out = $(".plog", card);
+      btn.disabled = true;
+      const lines = [`> git apply ${t.id}.patch`, ...t.log, `status: OPEN → PATCHED ✔`];
+      let k = 0;
+      const step = () => {
+        out.textContent += (k ? "\n" : "") + lines[k++];
+        if (k < lines.length) { const id = setTimeout(step, reduceMotion ? 0 : 380); entry.cleanup.push(() => clearTimeout(id)); return; }
+        card.classList.add("patched"); $(".st", card).textContent = "PATCHED"; btn.remove();
+        done.add(i); paint();
+      };
+      step();
+    });
+  }
+
+  // ---------- UPGRADE_SHOP.exe: spend the $3,000 grant like a loot drop ----------
+  function renderShop(body, entry) {
+    const G = D.grant, owned = new Set();
+    const money = (n) => "$" + n.toLocaleString("en-US");
+    let ac = null;
+    const coin = (up) => {
+      try {
+        ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+        const t = ac.currentTime;
+        [0, 0.07].forEach((d, k) => {
+          const o = ac.createOscillator(), v = ac.createGain();
+          o.type = "square"; o.frequency.value = up ? [988, 1319][k] : [660, 440][k];
+          v.gain.setValueAtTime(0.05, t + d); v.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.12);
+          o.connect(v); v.connect(ac.destination); o.start(t + d); o.stop(t + d + 0.13);
+        });
+      } catch { /* no audio */ }
+    };
+    body.innerHTML = `<h2>UPGRADE_SHOP.exe</h2><p class="muted">${esc(G.intro)}</p>
+      <div class="wallet"><span>GRANT WALLET</span><b class="gold">${money(G.budget)}</b><i><em></em></i></div>
+      <div class="shop">${G.items.map((it) => `<article class="item" data-id="${esc(it.id)}">
+        <div class="item-top"><span class="item-ic">${svg(it.icon)}</span><div><b>${esc(it.name)}</b><span class="price">${money(it.price)}</span></div></div>
+        <ul class="stats">${it.stats.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>
+        <button class="btn small buy" type="button">[ BUY ]</button></article>`).join("")}</div>
+      <h3 class="eq-h">EQUIPPED <span class="muted">(click an item to refund it)</span></h3>
+      <ol class="equipped"><li class="muted empty">Inventory empty. The grant is burning a hole in your pocket.</li></ol>
+      <div class="shop-done hidden"><p class="banner">★ LOADOUT COMPLETE ★</p><button class="btn print" type="button">PRINT THE RECEIPT</button>
+        <div class="pr-paper receipt"><pre></pre></div></div>`;
+    const gold = $(".gold", body), bar = $(".wallet em", body), eq = $(".equipped", body), doneBox = $(".shop-done", body);
+    const paint = () => {
+      const spent = G.items.filter((it) => owned.has(it.id)).reduce((a, it) => a + it.price, 0), left = G.budget - spent;
+      gold.textContent = money(left);
+      bar.style.width = (left / G.budget) * 100 + "%";
+      body.querySelectorAll(".item").forEach((c) => {
+        const it = G.items.find((x) => x.id === c.dataset.id), have = owned.has(it.id);
+        c.classList.toggle("owned", have);
+        const b = $(".buy", c); b.textContent = have ? "EQUIPPED ✔" : "[ BUY ]"; b.disabled = have || it.price > left;
+      });
+      const mine = G.items.filter((it) => owned.has(it.id));
+      eq.innerHTML = mine.length ? mine.map((it) => `<li data-id="${esc(it.id)}" tabindex="0" role="button" aria-label="Refund ${esc(it.name)}"><b>${esc(it.name)}</b> <span class="price">${money(it.price)}</span><p>${esc(it.why)}</p></li>`).join("")
+        : `<li class="muted empty">Inventory empty. The grant is burning a hole in your pocket.</li>`;
+      const all = owned.size === G.items.length;
+      doneBox.classList.toggle("hidden", !all);
+      if (all) award("spender");
+    };
+    const toggle = (id, buy) => { if (buy ? owned.has(id) : !owned.has(id)) return; buy ? owned.add(id) : owned.delete(id); coin(buy); paint(); };
+    $(".shop", body).onclick = (e) => { const b = e.target.closest(".buy"); if (b && !b.disabled) toggle(b.closest(".item").dataset.id, true); };
+    eq.onclick = (e) => { const li = e.target.closest("li[data-id]"); if (li) toggle(li.dataset.id, false); };
+    eq.onkeydown = (e) => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(li.dataset.id, false); } };
+
+    // the receipt, fed out line by line like the printer on the desk
+    const paper = $(".receipt", body), pre = $("pre", paper);
+    $(".print", body).onclick = (e) => {
+      const btn = e.currentTarget; btn.disabled = true;
+      const W = 34, row = (l, r) => l.slice(0, W - r.length - 1).padEnd(W - r.length, ".") + r;
+      const lines = ["   NIGHT SHIFT OS · GRANT RECEIPT", "   " + new Date().toLocaleDateString("en-GB") + "  03:00 AM", "-".repeat(W),
+        ...G.items.map((it) => row(it.name.replace(/ \(.*\)/, ""), money(it.price))), "-".repeat(W),
+        row("TOTAL", money(G.budget)), row("REMAINING", "$0"), "", "PAID BY: Wispr Flow (hopefully)", "CUSTOMER: " + D.owner.name, "", "   * THANK YOU. COME AGAIN. *"];
+      pre.textContent = ""; paper.style.height = "0px";
+      let k = 0;
+      const t = setInterval(() => {
+        pre.textContent += (k ? "\n" : "") + lines[k++];
+        paper.style.height = 16 + k * 17 + "px";
+        if (k < lines.length) return;
+        clearInterval(t); btn.disabled = false; btn.textContent = "PRINT AGAIN";
+      }, reduceMotion ? 0 : 140);
+      entry.cleanup.push(() => clearInterval(t));
+    };
+    paint();
+  }
+
   // ---------- Achievements ----------
   const TROPHIES = {
     clocked: ["Clocked in", "Booted Night Shift OS"],
@@ -605,6 +734,8 @@
     signed: ["Left a mark", "Signed the GUESTBOOK"],
     printed: ["Paper trail", "Printed a résumé"],
     voice: ["Voice of the night", "Ran a voice command"],
+    spender: ["Big spender", "Spent the whole $3,000 grant"],
+    patched: ["Patch Tuesday", "Applied every patch in WHY_HIRE_ME.exe"],
     snoop: ["Snoop", "Inspected everything in the room before sitting down"],
   };
   const got = (() => { try { return new Set(JSON.parse(store.get("trophies") || "[]")); } catch { return new Set(); } })();
@@ -1082,7 +1213,7 @@
       ghost: () => { say("who's there?"); setTimeout(() => say("…it's 3:00 AM. you shouldn't be awake."), 1400); setTimeout(() => unlock("dontopen"), 2800); },
       date: () => say(new Date().toString()),
       clear: () => { out.textContent = ""; },
-      sudo: (...r) => (r.join(" ").startsWith("hire") && award("hired"), say(r.join(" ").startsWith("hire") ? `[sudo] permission granted.\nDeploying ${D.owner.name} to Wispr Flow… ██████████ 100%\nSee you in Bangalore.` : "sudo: nice try.")),
+      sudo: (...r) => (r.join(" ").startsWith("hire") && award("hired"), say(r.join(" ").startsWith("hire") ? `[sudo] permission granted.\nDeploying ${D.owner.name} to Wispr Flow… ██████████ 100%\nSee you in Bangalore.\n(The patch notes are in WHY_HIRE_ME.exe.)` : "sudo: nice try.")),
     };
     $("form", body).onsubmit = (e) => {
       e.preventDefault();

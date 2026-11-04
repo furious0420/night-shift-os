@@ -205,6 +205,78 @@ window.OS_DATA = {
   ],
   secret: "You found it.\n\nMost people close the tab. You played the quiz to the end — that's the same stubbornness I bring to work.\n\nIf you've read this far, we should probably talk.\n\n— " ,
 
+  // WHY_HIRE_ME.exe — problems from public reviews + proposed fixes, and an India launch plan
+  hire: {
+    note: "Triaged from public reviews, Reddit chatter and Wispr's own posts. Proposals, not promises.",
+    issues: [
+      {
+        id: "WF-001", sev: "CRITICAL", title: "No signal, no voice",
+        symptom: "Dictation dies the moment the Wi-Fi or Wispr's servers drop. There is no offline fallback.",
+        cause: "Everything runs in the cloud.",
+        patch: [
+          "Ship a hybrid engine: a small on-device model transcribes all the time, and the cloud model polishes the text whenever it's reachable.",
+          "Offline, raw text keeps flowing and is cleaned up automatically once the connection is back.",
+          "A tiny LOCAL / CLOUD badge in the menu bar always shows which engine is running.",
+        ],
+        log: ["fetching ondevice-asr-small … ok", "fallback: cloud → local … armed", "network: offline … still typing ✔"],
+      },
+      {
+        id: "WF-002", sev: "HIGH", title: "Who's watching my screen?",
+        symptom: "Audio and screenshots of the active window go to the cloud, Privacy Mode is off by default, and the keystroke-logging rumours won't die.",
+        cause: "Users can't see what leaves their machine.",
+        patch: [
+          "Private by default: zero data retention switched on for everyone.",
+          "A \"what left my device\" log after every dictation: audio, screen context or app name, and why.",
+          "Per-app blocklist (banking, password managers) and on-device screen reading that sends short text hints, never screenshots.",
+          "An independent security audit with a public summary.",
+        ],
+        log: ["privacy_mode = default_on … ok", "screenshots → on-device hints … ok", "egress log … visible to user ✔"],
+      },
+      {
+        id: "WF-003", sev: "HIGH", title: "It doesn't hear me",
+        symptom: "Accuracy drops with Indian, mixed and strong accents, and Hinglish gets forced into English.",
+        cause: "Thin training data for these accents, and only one combined accuracy number is tracked.",
+        patch: [
+          "Track accuracy per accent and block any release that makes an accent worse.",
+          "Learn each user's accent and vocabulary from their own corrections over the first few sessions.",
+          "Real Hinglish: keep Hindi words in the script the user chooses instead of translating them.",
+        ],
+        log: ["compiling accent_eval[en-IN, hi-en] … ok", "gate: no accent may regress … armed", "personal adaptation … learning ✔"],
+      },
+      {
+        id: "WF-004", sev: "MEDIUM", title: "I never said that",
+        symptom: "The AI cleanup sometimes invents words, and model updates have quietly made accuracy worse.",
+        cause: "No confidence signal for users and no automatic check for quality drops.",
+        patch: [
+          "Lightly underline low-confidence words so they're quick to check.",
+          "One key restores the raw transcript, and a VERBATIM mode turns rewriting off when exact words matter.",
+          "Roll models out to a small share of users first and roll back automatically if people start correcting more.",
+        ],
+        log: ["confidence underline … ok", "staged rollout 1% → 10% → 100% … ok", "auto-rollback on edit-rate spike … armed ✔"],
+      },
+    ],
+    indiaIntro: "Wispr is betting on India. Here's the build order I'd push for, from a Bengaluru engineering student who would be the target user.",
+    india: [
+      { id: "IN-01", title: "Speak the way India speaks", body: "Code-switching across English and Hindi, Kannada, Tamil and Telugu mid-sentence, with each word kept in the script the user picks (Roman or native)." },
+      { id: "IN-02", title: "WhatsApp-first", body: "India runs on WhatsApp. An Android keyboard mode that turns a rambling voice thought into a clean message in the right tone and language, ready to send." },
+      { id: "IN-03", title: "Built for budget phones and patchy 4G", body: "Android-first, a small download, and the offline on-device engine from WF-001 so it works on 4 GB phones and in the metro tunnel." },
+      { id: "IN-04", title: "Priced for India", body: "Rupee pricing with UPI autopay, a student plan unlocked with a college email, and a campus ambassador programme starting in Bengaluru's engineering colleges." },
+    ],
+  },
+
+  // UPGRADE_SHOP.exe — what the $3,000 grant buys. Prices must add up to `budget`.
+  grant: {
+    budget: 3000,
+    intro: "Wispr Flow's grant, spent like a loot drop. Buy everything to see the final loadout.",
+    items: [
+      { id: "mac", icon: "laptop", name: "MacBook Air (M-series, 16 GB)", price: 1099, stats: ["-100% fan noise", "+18 h battery", "+1 portable dev machine"], why: "My current laptop is a brick and sounds like a jet engine. I need something quiet I can code on anywhere." },
+      { id: "pc", icon: "tower", name: "Gaming + ML PC build", price: 1250, stats: ["+144 fps", "+1 local GPU for training runs", "+RGB (non-negotiable)"], why: "Who doesn't love a good gaming setup? By night it games, by later-night it trains my models." },
+      { id: "trip", icon: "plane", name: "Solo trip abroad", price: 450, stats: ["+1 passport stamp", "+100 discomfort XP", "-comfort zone"], why: "Flights and hostels somewhere new. Memories are worth spending on." },
+      { id: "gig", icon: "ticket", name: "Live metal show", price: 150, stats: ["+1 ringing ear", "+max morale", "+1 band tee"], why: "Hearing the riffs live, in the crowd, at full volume." },
+      { id: "mic", icon: "mic", name: "USB mic for dictation", price: 51, stats: ["+clean audio", "+fewer misheard words", "+faster voice builds"], why: "This whole site was built by voice. A proper mic gives Wispr Flow cleaner audio to work with." },
+    ],
+  },
+
   // PRINT_RESUME — the two PDFs live in /assets
   resumes: [
     {
